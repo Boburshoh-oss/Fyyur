@@ -182,7 +182,7 @@ def show_venue(venue_id):
   upcoming=[]
   
   for item in lists:
-        artist=db.session.query(Artist.name,Artist.image_lisnk)
+        artist=db.session.query(Artist.name,Artist.image_link)
         show_add={
           'artist_id':item.artist_id,
           'artist_name':artist.name,
@@ -355,18 +355,14 @@ def edit_venue_submission(venue_id):
 
 
 
-@app.route('/venues/<venue_id>', methods=['DELETE'])
+@app.route('/venues/<int:venue_id>del', methods=['DELETE'])
 def delete_venue(venue_id):
+      db.session.query(Show).filter(Show.venue_id==venue_id).delete()
+      db.session.query(Venue).filter(Venue.id==venue_id).delete()
+      db.session.commit()
+      flash('Venue was  deleted')
       
-      try:
-        db.session.query(Show).filter(Show.venue_id==venue_id).delete()
-        db.session.query(Venue).filter(Venue.id==venue_id).delete()
-        db.session.commit()
-        flash('Venue deleted')
-      except: 
-        flash('Sorry cannot be deleted')
-      finally:
-        db.session.close()
+      db.session.close()
           
   # TODO: Complete this endpoint for taking a venue_id, and using
   # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
